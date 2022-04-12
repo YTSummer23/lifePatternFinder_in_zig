@@ -17,6 +17,16 @@ const Game = struct {
         }
     }
 
+    fn initBr(self: *Game, argVariant: u64) void {
+        var lVariant = argVariant;
+        for (self.board) |i, index_i| {
+            for (i) |_, index_j| {
+                self.board[index_i][index_j] = @intCast(u8, (lVariant & 1));
+                lVariant >>= 1;
+            }
+        }
+    }
+
     fn step (self: *Game) void {
         var cellsAlive: u8 = 0;
         for (self.board) |i, index_i| {
@@ -85,16 +95,24 @@ const Game = struct {
                         cellsAlive += self.board[index_i - 1][index_j + 1];
                         cellsAlive += self.board[index_i - 1][index_j - 1];
                     }
-                    if (cellsAlive == 3) {
-                        self.nextBoard[index_i][index_j] = 1;
-                    }
-                    else if (cellsAlive > 3 and cellsAlive < 2) {
-                        self.nextBoard[index_i][index_j] = 0;
-                    }
+                }
+                if (cellsAlive == 3) {
+                    self.nextBoard[index_i][index_j] = 1;
+                }
+                else if (cellsAlive > 3 and cellsAlive < 2) {
+                    self.nextBoard[index_i][index_j] = 0;
                 }
             }
         }
         self.trB();
+    }
+    fn printBr(self: *Game) void {
+        for (self.nextBoard) |i| {
+            for (i) |j| {
+                print("{} ", .{j});
+            }
+            print("\n", .{});
+        }
     }
 };
 
@@ -103,5 +121,8 @@ pub fn main() !void {
         .board = [1][7]u8 { [1]u8 { 0 } ** 7} ** 6,
         .nextBoard = [1][7]u8 { [1]u8 { 0 } ** 7} ** 6
     };
+    game.initBr(0xC3CD8C);
     game.step();
+    game.step();
+    game.printBr();
 }
